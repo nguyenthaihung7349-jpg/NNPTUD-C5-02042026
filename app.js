@@ -4,6 +4,15 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 let mongoose = require('mongoose')
+require('./schemas/users')
+require('./schemas/roles')
+require('./schemas/categories')
+require('./schemas/products')
+require('./schemas/carts')
+require('./schemas/inventories')
+require('./schemas/payments')
+require('./schemas/reservations')
+require('./schemas/messages')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,7 +37,8 @@ app.use('/api/v1/products', require('./routes/products'))
 app.use('/api/v1/categories', require('./routes/categories'))
 app.use('/api/v1/roles', require('./routes/roles'))
 app.use('/api/v1/upload', require('./routes/upload'))
-mongoose.connect('mongodb://localhost:27017/NNPTUD-C5');
+app.use('/api/v1/messages', require('./routes/messages'))
+mongoose.connect('mongodb+srv://nguyenthaihung7349_db_user:P0srg3g5heE1fRSW@baitap.vqodrto.mongodb.net/NNPTUD-C5?appName=baitap');
 mongoose.connection.on('connected', function () {
   console.log("connected");
 })

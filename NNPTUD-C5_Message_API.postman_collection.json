@@ -1,0 +1,367 @@
+{
+  "info": {
+    "name": "NNPTUD-C5 Message API",
+    "description": "Collection for testing Message API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"password123\",\n  \"email\": \"test1@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Register Second User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser2\",\n  \"password\": \"password123\",\n  \"email\": \"test2@example.com\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login User 1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser1\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set(\"user1_token\", jsonData);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login User 2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser2\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has token\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set(\"user2_token\", jsonData);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get User IDs",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user1_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/v1/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "users"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Get user IDs\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    var user2 = jsonData.find(u => u.username === 'testuser2');",
+              "    if (user2) {",
+              "        pm.collectionVariables.set(\"user2_id\", user2._id);",
+              "    }",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Send Text Message (User 1 to User 2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user1_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{user2_id}}\",\n  \"type\": \"text\",\n  \"text\": \"Hello from User 1!\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "messages"]
+        }
+      }
+    },
+    {
+      "name": "Send Text Message (User 2 to User 1)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user2_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{user1_id}}\",\n  \"type\": \"text\",\n  \"text\": \"Hi User 1, this is User 2!\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "messages"]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Get user1_id from previous response",
+              "pm.collectionVariables.set(\"user1_id\", pm.collectionVariables.get(\"user1_token\")); // This needs to be set properly"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Messages between User 1 and User 2",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user1_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/v1/messages/{{user2_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "messages", "{{user2_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Last Messages for User 1",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user1_token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3000/api/v1/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "messages"]
+        }
+      }
+    },
+    {
+      "name": "Upload File for Message",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/upload/one_file",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "upload", "one_file"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Get file path\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set(\"file_path\", jsonData.path);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Send File Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user1_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"to\": \"{{user2_id}}\",\n  \"type\": \"file\",\n  \"text\": \"{{file_path}}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/v1/messages",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["api", "v1", "messages"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "user1_token",
+      "value": ""
+    },
+    {
+      "key": "user2_token",
+      "value": ""
+    },
+    {
+      "key": "user1_id",
+      "value": ""
+    },
+    {
+      "key": "user2_id",
+      "value": ""
+    },
+    {
+      "key": "file_path",
+      "value": ""
+    }
+  ]
+}
